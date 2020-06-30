@@ -2,10 +2,12 @@ import sys
 import argparse
 from yolo import YOLO, detect_video
 from PIL import Image
+import os
 
 def detect_img(yolo):
     while True:
         img = input('Input image filename:')
+        root_dir_path = os.path.dirname(os.path.abspath(img))
         try:
             image = Image.open(img)
         except:
@@ -13,7 +15,7 @@ def detect_img(yolo):
             continue
         else:
             r_image = yolo.detect_image(image)
-            r_image.show()
+            r_image.save(os.path.join(root_dir_path,img.split('.')[0] + '_' + 'yolo' + '.jpg'))
     yolo.close_session()
 
 FLAGS = None
@@ -25,17 +27,17 @@ if __name__ == '__main__':
     Command line options
     '''
     parser.add_argument(
-        '--model', type=str,
+        '--model_path', type=str,
         help='path to model weight file, default ' + YOLO.get_defaults("model_path")
     )
 
     parser.add_argument(
-        '--anchors', type=str,
+        '--anchors_path', type=str,
         help='path to anchor definitions, default ' + YOLO.get_defaults("anchors_path")
     )
 
     parser.add_argument(
-        '--classes', type=str,
+        '--classes_path', type=str,
         help='path to class definitions, default ' + YOLO.get_defaults("classes_path")
     )
 
@@ -75,3 +77,4 @@ if __name__ == '__main__':
         detect_video(YOLO(**vars(FLAGS)), FLAGS.input, FLAGS.output)
     else:
         print("Must specify at least video_input_path.  See usage with --help.")
+
